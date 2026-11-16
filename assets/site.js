@@ -17,6 +17,19 @@ function toast(text) {
   setTimeout(() => t.remove(), 2600);
 }
 
+/* Start each new page at the top, or at its #section. Some viewers, such as the Claude artifact frame,
+   carry the scroll position over from the page before. Back and forward keep the browser's own position. */
+(function startPosition() {
+  const nav = performance.getEntriesByType("navigation")[0];
+  if (nav && nav.type === "back_forward") return;
+  const place = () => {
+    const target = location.hash.length > 1 && document.getElementById(decodeURIComponent(location.hash.slice(1)));
+    if (target) target.scrollIntoView({ block: "start" }); else window.scrollTo(0, 0);
+  };
+  place();
+  addEventListener("load", () => { place(); setTimeout(place, 60); }, { once: true });
+})();
+
 /* Header: transparent over the home hero, solid everywhere else */
 const header = $(".site-header");
 const hero = $(".hero");
