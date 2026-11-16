@@ -99,32 +99,37 @@
   <div class="wrap">
     <h2 id="quick-title">Plan your Mentawai trip</h2>
     <p>Tell us when and what for. You get a day-by-day plan with ferry days and a cost estimate, and the Satu team books it.</p>
-    <form class="quick-form" action="plan.html" method="get">
-      <label>When
-        <select class="field" name="month" id="quick-month"></select>
-      </label>
-      <label>Nights on the islands
-        <select class="field" name="nights">
-          <option>4</option><option selected>7</option><option>9</option><option>12</option><option>14</option>
-        </select>
-      </label>
-      <label>What for
-        <select class="field" name="focus">
-          <option value="surf">Surf</option>
-          <option value="culture">Culture and forest</option>
-          <option value="rest">Rest, snorkel, family</option>
-          <option value="property">Property viewing</option>
-        </select>
-      </label>
-      <label>Surf level
-        <select class="field" name="level">
-          <option value="none">Not surfing</option>
-          <option value="beginner">Beginner</option>
-          <option value="intermediate" selected>Intermediate</option>
-          <option value="advanced">Advanced</option>
-        </select>
-      </label>
-      <button class="btn" type="submit">Build my trip</button>
+    <form class="ticket" action="plan.html" method="get">
+      <div class="ticket-main">
+        <label>When
+          <select class="field" name="month" id="quick-month"></select>
+        </label>
+        <label>Nights on the islands
+          <select class="field" name="nights">
+            <option>4</option><option selected>7</option><option>9</option><option>12</option><option>14</option>
+          </select>
+        </label>
+        <label>What for
+          <select class="field" name="focus">
+            <option value="surf">Surf</option>
+            <option value="culture">Culture and forest</option>
+            <option value="rest">Rest, snorkel, family</option>
+            <option value="property">Property viewing</option>
+          </select>
+        </label>
+        <label>Surf level
+          <select class="field" name="level">
+            <option value="none">Not surfing</option>
+            <option value="beginner">Beginner</option>
+            <option value="intermediate" selected>Intermediate</option>
+            <option value="advanced">Advanced</option>
+          </select>
+        </label>
+      </div>
+      <div class="ticket-stub">
+        <p>Day-by-day plan on the ferry days, with costs</p>
+        <button class="btn" type="submit">Build my trip</button>
+      </div>
     </form>
     <div class="finder-row">
       <form class="search" id="finder-form" role="search">
@@ -144,7 +149,7 @@
         <h2 id="trips-title">Curated trips</h2>
         <p class="lede">Six trips the Satu team plans end to end, from the Padang hotel to the boat back. Prices are per person sharing, without flights to Padang.</p>
       </div>
-      <a class="btn btn-line" href="plan.html#trips">See every day</a>
+      <a class="more" href="plan.html#trips">Every day of every trip</a>
     </div>
     <div class="rail" id="trip-rail"></div>
   </div>
@@ -164,8 +169,8 @@
       <li><h3>Cross to the islands</h3><p>Mentawai Fast from Muaro port, 3.5 to 5 hours, or Susi Air to Rokot on Sipora in 40 minutes.</p><a class="btn btn-line btn-sm" href="#" data-request="Ferry ticket">Book the crossing</a></li>
       <li><h3>Transfer to your stay</h3><p>A driver or speedboat meets you at the port or the airport and takes you to the door.</p><a class="btn btn-line btn-sm" href="#" data-request="Transfer to my stay">Book a transfer</a></li>
     </ol>
-    <div class="table-scroll" style="margin-top:var(--space-4)">
-      <table class="tbl" id="ferry-table">
+    <div style="margin-top:var(--space-5)">
+      <table class="board" id="ferry-table">
         <caption>Mentawai Fast from Padang</caption>
         <thead><tr><th scope="col">To</th><th scope="col">Leaves Padang</th><th scope="col">Back to Padang</th><th scope="col">Crossing</th><th scope="col">One way</th></tr></thead>
         <tbody></tbody>
@@ -182,7 +187,7 @@
         <h2 id="before-title">Before you go</h2>
         <p class="lede">Six things that catch first-time visitors out.</p>
       </div>
-      <a class="btn btn-line" href="guide.html">Read the full guide</a>
+      <a class="more" href="guide.html">Read the full guide</a>
     </div>
     <ul class="musts">
       <li><strong>Visa</strong><p>Apply for the e-VOA online before you fly: IDR 500,000 for 30 days.</p></li>
@@ -238,7 +243,7 @@
         <h2 id="prop-title">Property for sale</h2>
         <p class="lede">Land, villas and running businesses, each with the title type and a viewing you can book. Buying as a foreigner starts with a Settle consult.</p>
       </div>
-      <a class="btn btn-line" href="#" data-request="Settle consult">Book a Settle consult</a>
+      <a class="more" href="#" data-request="Settle consult">Book a Settle consult</a>
     </div>
     <article class="listing">
       <img src="img/bosua-plot-1000.webp" srcset="img/bosua-plot-1000.webp 1000w, img/bosua-plot-2000.webp 2000w" sizes="(max-width: 820px) 100vw, 55vw"
@@ -265,7 +270,7 @@
       <h2 id="list-title">List with us</h2>
       <p>Run a resort, boat, warung, shop or service in Mentawai? Put it in front of every visitor planning a trip.</p>
     </div>
-    <a class="btn btn-line" href="#" data-request="List my business">List my business</a>
+    <a class="btn" href="#" data-request="List my business">List my business</a>
   </div>
 </section>
 </main>

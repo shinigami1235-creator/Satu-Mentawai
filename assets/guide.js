@@ -1,5 +1,5 @@
 // Guide page: ferry and wave tables, the packing checklist and the contents highlight.
-$("#ferry-table tbody").innerHTML = FERRY.map(f => `<tr><td><strong>${esc(f.to)}</strong><br><span class="small">${esc(f.island)}</span></td><td>${esc(f.out)}</td><td>${esc(f.back)}</td><td>${esc(f.time)}</td><td>${idr(f.fare)}</td></tr>`).join("");
+$("#ferry-table tbody").innerHTML = FERRY.map(f => `<tr><td><b>${esc(f.to)}</b><span>${esc(f.island)}</span></td><td data-l="Leaves Padang"><span class="t">${esc(f.out)}</span></td><td data-l="Back to Padang">${esc(f.back)}</td><td data-l="Crossing">${esc(f.time)}</td><td data-l="One way" class="fare">${idr(f.fare)}</td></tr>`).join("");
 $("#break-table tbody").innerHTML = BREAKS.map(b => `<tr><td><strong>${esc(b.name)}</strong></td><td>${esc(b.region)}</td><td>${esc(b.dir)}</td><td>${esc(b.level)}</td><td>${esc(b.note)}</td></tr>`).join("");
 
 const PACK = [

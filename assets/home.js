@@ -13,13 +13,16 @@ $("#trip-rail").innerHTML = TRIPS.map(t => `
     <img src="img/${t.img}-1000.webp" alt="" width="1000" height="750" loading="lazy">
     <div class="trip-body">
       <h3>${esc(t.title)}</h3>
-      <span class="meta">${t.stay === "charter" ? `${t.nights} nights on the boat` : `${t.nights} nights on the islands`}. ${esc(t.who)}</span>
-      <p style="margin:.3rem 0 0">${esc(t.summary)}</p>
-      <span class="trip-price num">From ${usd(tripFrom(t))} per person</span>
+      <span class="meta">${esc(t.who)}</span>
+      <p style="margin:.3rem 0 1rem">${esc(t.summary)}</p>
+      <div class="trip-stub">
+        <div><b class="num">${t.nights}</b><br><span>nights ${t.stay === "charter" ? "on the boat" : "on the islands"}</span></div>
+        <div class="from"><span>from, per person</span><br><b class="num">${usd(tripFrom(t))}</b></div>
+      </div>
     </div>
   </a>`).join("");
 
-$("#ferry-table tbody").innerHTML = FERRY.map(f => `<tr><td><strong>${esc(f.to)}</strong><br><span class="small">${esc(f.island)}</span></td><td>${esc(f.out)}</td><td>${esc(f.back)}</td><td>${esc(f.time)}</td><td>${idr(f.fare)}</td></tr>`).join("");
+$("#ferry-table tbody").innerHTML = FERRY.map(f => `<tr><td><b>${esc(f.to)}</b><span>${esc(f.island)}</span></td><td data-l="Leaves Padang"><span class="t">${esc(f.out)}</span></td><td data-l="Back to Padang">${esc(f.back)}</td><td data-l="Crossing">${esc(f.time)}</td><td data-l="One way" class="fare">${idr(f.fare)}</td></tr>`).join("");
 
 function renderHomeItems() { $("#home-items").innerHTML = allListings().slice(0, 4).map(l => itemCard(l)).join(""); }
 renderHomeItems();

@@ -3,7 +3,7 @@
 
 const RATE = 16500; // IDR per US$1, used only to show US$ estimates
 const toUsd = n => n / RATE;
-const idr = n => "IDR " + Math.round(n).toLocaleString("en-US");
+const idr = n => "IDR\u00a0" + Math.round(n).toLocaleString("en-US");
 const usd = n => "US$" + Math.round(n).toLocaleString("en-US");
 
 const COSTS = {
