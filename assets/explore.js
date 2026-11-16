@@ -22,7 +22,7 @@ const WHAT = [["surf", "Surf"], ["beach", "Beaches and snorkelling"], ["island",
   ["culture", "Villages and culture"], ["food", "Food"], ["essential", "ATM, clinic or port"], ["all", "Show me everything"]];
 const AWAY = { id: "away", name: "Not on the islands yet", lat: -2.034, lon: 99.594 };
 const nOf = c => PLACES.filter(p => c === "all" || p.cat === c).length;
-$("#what-list").innerHTML = WHAT.map(([c, label]) =>
+if (!$("#what-list").children.length) $("#what-list").innerHTML = WHAT.map(([c, label]) =>
   `<li><button type="button" class="choice" data-what="${c}"><svg class="ic" aria-hidden="true"><use href="#${CAT_ICONS[c]}"/></svg><span>${label}</span><small class="num">${nOf(c)}</small></button></li>`).join("");
 const lastBase = store.get("base", "");
 $("#where-list").innerHTML = [...BASES, AWAY].map(b =>
@@ -210,7 +210,8 @@ function rows() {
 }
 function render() {
   const r = rows();
-  $("#places").innerHTML = r.map((p, i) => placeCard(p, i)).join("");
+  // the list is hidden while the questions show, so only build it for the results
+  $("#places").innerHTML = atlas.dataset.step === "results" ? r.map((p, i) => placeCard(p, i)).join("") : "";
   $("#ex-count").textContent = `${r.length} place${r.length === 1 ? "" : "s"}, nearest first. Distances are in a straight line.`;
   if (origin) nowText();
   drawPins(r);
