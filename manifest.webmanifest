@@ -1,7 +1,7 @@
 {
   "name": "Satu Mentawai",
   "short_name": "Satu",
-  "description": "Plan a trip to the Mentawai Islands, read the guide offline, and buy and sell in the island market.",
+  "description": "A map of the Mentawai Islands with the waves, beaches, food, ATMs and clinics nearest you. Plan the trip, read the guide offline, and buy and sell in the island market.",
   "start_url": "index.html",
   "scope": "./",
   "display": "standalone",

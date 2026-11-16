@@ -59,16 +59,32 @@ $("#ex-cats").addEventListener("click", e => {
   render();
 });
 
-/* List or map on phones */
-$$(".view-switch [data-view]").forEach(b => b.addEventListener("click", () => {
-  $("#explore").dataset.view = b.dataset.view;
-  $$(".view-switch [data-view]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
-}));
+/* Bottom sheet on phones: peek shows the map, open shows the list */
+const atlas = $("#explore"), phone = matchMedia("(max-width: 920px)");
+function setSheet(state) {
+  atlas.dataset.sheet = state;
+  const open = state === "open";
+  $("#sheet-toggle").setAttribute("aria-expanded", String(open));
+  $("#sheet-toggle span").textContent = open ? "Show the map" : "Show the list";
+}
+$("#sheet-toggle").addEventListener("click", () => setSheet(atlas.dataset.sheet === "open" ? "peek" : "open"));
+let touchY = null;
+$("#sheet-toggle").addEventListener("touchstart", e => { touchY = e.touches[0].clientY; }, { passive: true });
+$("#sheet-toggle").addEventListener("touchend", e => {
+  if (touchY === null) return;
+  const dy = e.changedTouches[0].clientY - touchY; touchY = null;
+  if (Math.abs(dy) > 30) { e.preventDefault(); setSheet(dy < 0 ? "open" : "peek"); }
+});
 
 /* Map: OpenStreetMap streets over a drawn coastline, so it still works with no signal */
 const PIN_COLOR = { surf: "#0f7c7a", essential: "#b42318", food: "#2d5a3a" };
-const map = L.map("ex-map", { zoomSnap: 0.5, scrollWheelZoom: false, attributionControl: true }).setView([-2.0, 99.6], 8);
-map.attributionControl.setPrefix(false);
+const map = L.map("ex-map", { zoomSnap: 0.5, scrollWheelZoom: false, zoomControl: false, attributionControl: false }).setView([-2.0, 99.6], 8);
+L.control.zoom({ position: "bottomright" }).addTo(map);
+const attr = L.control.attribution({ position: phone.matches ? "topleft" : "bottomright", prefix: false }).addTo(map);
+// Room the panel takes over the map: left side on a laptop, bottom sheet on a phone
+const cover = () => phone.matches
+  ? { paddingTopLeft: [24, 70], paddingBottomRight: [24, $("#atlas-panel").offsetHeight + 24] }
+  : { paddingTopLeft: [$("#atlas-panel").getBoundingClientRect().right - $("#ex-map").getBoundingClientRect().left + 32, 70], paddingBottomRight: [40, 40] };
 L.polygon(LAND.map(r => [r]), { stroke: true, color: "#7f9a8c", weight: 1, fillColor: "#e9e3d2", fillOpacity: 1, interactive: false }).addTo(map);
 const tiles = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
   maxZoom: 18, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'
@@ -78,7 +94,7 @@ tiles.on("tileload", () => { tilesOk = true; $("#map-note").hidden = true; });
 setTimeout(() => {
   if (tilesOk) return;
   map.removeLayer(tiles);
-  map.attributionControl.addAttribution("Coastline &copy; OpenStreetMap contributors");
+  attr.addAttribution("Coastline &copy; OpenStreetMap contributors");
   $("#map-note").hidden = false;
   offline = true;
   setZoom(zoom);
@@ -119,7 +135,7 @@ function setZoom(mode) {
   if (origin) pts.push([origin.lat, origin.lon]);
   if (!pts.length) return;
   map.invalidateSize();
-  map.fitBounds(L.latLngBounds(pts), { padding: [36, 36], maxZoom: mode === "near" ? (offline ? 11 : 15) : 11, animate: false });
+  map.fitBounds(L.latLngBounds(pts), { ...cover(), maxZoom: mode === "near" ? (offline ? 11 : 15) : 11, animate: false });
 }
 $("#zoom-near").addEventListener("click", () => setZoom("near"));
 $("#zoom-all").addEventListener("click", () => setZoom("all"));
@@ -160,6 +176,7 @@ function render() {
   drawPins(r);
   setZoom(zoom);
   drawDay();
+  drawSel();
 }
 $("#places").addEventListener("click", e => {
   const s = e.target.closest("[data-sel]"); if (s) select(s.dataset.sel, false);
@@ -167,22 +184,44 @@ $("#places").addEventListener("click", e => {
   const f = e.target.closest("[data-fc]"); if (f) forecast(f.dataset.fc);
 });
 
+function drawSel() {
+  const box = $("#ex-info"), p = PLACES.find(x => x.id === selected);
+  atlas.classList.toggle("has-sel", !!p);
+  if (!p) { box.hidden = true; return; }
+  const d = origin ? km(origin, p) : null;
+  box.hidden = false;
+  box.innerHTML = `<p class="place-top"><span class="place-dist num">${d !== null ? dist(d) : ""}</span><span class="place-cat">${CATS[p.cat]}, ${esc(p.island)}</span></p><h3>${esc(p.name)}</h3><p class="small">${esc(p.access)}</p>
+    <div class="actions">${p.q ? `<a class="btn btn-sm" href="${mapsQ(p.q)}" target="_blank" rel="noopener">Directions</a>` : `<a class="btn btn-sm" href="#" data-request="Boat taxi" data-message="Boat to ${esc(p.name)}">Book a boat</a>`}<button class="btn btn-line btn-sm" type="button" data-day="${p.id}" aria-pressed="${day.includes(p.id)}">${day.includes(p.id) ? "In my day" : "Add to my day"}</button><button class="link-btn small" type="button" data-more="${p.id}">More</button></div>`;
+}
+function unselect() {
+  if (!selected) return;
+  selected = null;
+  shown.forEach((q, i) => markers[q.id]?.setIcon(pinIcon(q, i + 1, false)).setZIndexOffset(0));
+  $$(".place.sel").forEach(x => x.classList.remove("sel"));
+  drawSel();
+}
+map.on("click", unselect);
 function select(id, fromMap) {
   selected = id;
-  const p = PLACES.find(x => x.id === id);
-  const d = origin ? km(origin, p) : null;
   shown.forEach((q, i) => markers[q.id]?.setIcon(pinIcon(q, i + 1, q.id === id)).setZIndexOffset(q.id === id ? 1000 : 0));
-  if (!fromMap && markers[id]) map.panTo(markers[id].getLatLng(), { animate: !reduceMotion.matches });
   $$(".place.sel").forEach(x => x.classList.remove("sel"));
-  $(`#pl-${id}`)?.classList.add("sel");
-  $("#ex-info").innerHTML = `<h3>${esc(p.name)}</h3><p class="small">${CATS[p.cat]}, ${esc(p.island)}${d !== null ? `. ${dist(d)} from ${esc(origin.label)}` : ""}</p><p>${esc(p.access)}</p>
-    <div class="actions">${p.q ? `<a class="btn btn-sm" href="${mapsQ(p.q)}" target="_blank" rel="noopener">Directions</a>` : ""}<button class="btn btn-line btn-sm" type="button" data-day="${p.id}" aria-pressed="${day.includes(p.id)}">${day.includes(p.id) ? "In my day" : "Add to my day"}</button></div>`;
-  if (fromMap) {
-    if ($("#explore").dataset.view === "map" && matchMedia("(max-width: 900px)").matches) return;
-    $(`#pl-${id}`)?.scrollIntoView({ block: "center", behavior: reduceMotion.matches ? "auto" : "smooth" });
+  const card = $(`#pl-${id}`);
+  card?.classList.add("sel");
+  drawSel();
+  if (phone.matches) setSheet("peek");
+  // wait for the sheet to settle so the pin lands in the part of the map still showing
+  setTimeout(() => markers[id] && map.panInside(markers[id].getLatLng(), { ...cover(), animate: !reduceMotion.matches }), phone.matches ? 280 : 0);
+  if (phone.matches) return;
+  if (fromMap && card) {
+    const list = $("#atlas-panel");
+    list.scrollTo({ top: card.offsetTop - list.clientHeight / 3, behavior: reduceMotion.matches ? "auto" : "smooth" });
   }
 }
-$("#ex-info").addEventListener("click", e => { const d = e.target.closest("[data-day]"); if (d) toggleDay(d.dataset.day); });
+$("#ex-info").addEventListener("click", e => {
+  const d = e.target.closest("[data-day]"); if (d) toggleDay(d.dataset.day);
+  const m = e.target.closest("[data-more]");
+  if (m) { setSheet("open"); requestAnimationFrame(() => { const c = $(`#pl-${m.dataset.more}`), l = $("#atlas-panel"); if (c) l.scrollTop = c.offsetTop - 120; }); }
+});
 
 /* My day */
 function toggleDay(id) {

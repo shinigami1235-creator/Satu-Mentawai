@@ -642,3 +642,47 @@ input:focus-visible, select:focus-visible, textarea:focus-visible { border-color
 .now-cats { flex-wrap: wrap; overflow: visible; }
 .now-cats .cat { text-decoration: none; background: transparent; color: #fff; border-color: rgba(255,255,255,.4); }
 .now-cats .cat:hover { background: #fff; color: var(--ink); }
+
+/* Home: the map is the front page, with the place list in a panel over it */
+.atlas { position: relative; height: 100svh; min-height: 34rem; padding-top: 4.25rem; box-sizing: border-box; }
+.atlas-map { position: relative; height: 100%; isolation: isolate; }
+.atlas .ex-leaflet.leaflet-container { height: 100%; min-height: 0; }
+.atlas .map-note { left: auto; right: .6rem; bottom: auto; top: 3.4rem; max-width: 17rem; }
+.atlas-panel { position: absolute; z-index: 2; top: calc(4.25rem + 1rem); bottom: 1rem; left: max(1.25rem, calc((100vw - var(--wrap)) / 2)); width: 27rem;
+  overflow-y: auto; overscroll-behavior: contain; background: var(--paper); border: 1px solid var(--line); box-shadow: 0 2px 10px rgba(14,31,37,.18); padding: 1.4rem 1.25rem 1.25rem; }
+.atlas-head h1 { margin: 0 0 .5rem; font-size: clamp(2rem, 3vw, 2.7rem); font-weight: 880; font-stretch: 125%; line-height: .9; letter-spacing: -0.01em; text-transform: uppercase; color: var(--water); }
+.atlas-lede { margin: 0 0 1rem; color: var(--ink-2); font-size: var(--step--1); text-wrap: pretty; }
+.atlas .locate { margin-top: 0; gap: .6rem .8rem; }
+.atlas .locate-pick { color: var(--ink-2); font-size: var(--step--1); }
+.atlas .locate-pick .field { min-width: 0; width: 11rem; padding-block: .4rem; }
+.atlas .locate-status { color: var(--lagoon); min-height: 0; margin: .5rem 0 .2rem; font-size: var(--step--1); }
+.atlas .cat-row { margin: .6rem -1.25rem 0; padding: 0 1.25rem .5rem; scrollbar-width: thin; }
+.atlas .count { font-size: var(--step--1); margin: .4rem 0 .6rem; }
+.atlas .place { grid-template-columns: 2.5rem minmax(0, 1fr); gap: .8rem; padding: .9rem; }
+.atlas .place-ic { width: 2.5rem; height: 2.5rem; }
+.atlas .place h3 { font-size: var(--step-0); font-stretch: 112%; }
+.atlas .place-desc { font-size: var(--step--1); }
+.sheet-handle { display: none; }
+.sel-card { display: none; }
+@media (max-width: 920px) {
+  .atlas { height: calc(100svh - var(--tabbar) - 2.5rem); min-height: 30rem; }
+  .atlas-panel { top: auto; left: 0; right: 0; bottom: 0; width: auto; max-height: 52%; border-width: 1px 0 0; box-shadow: 0 -2px 10px rgba(14,31,37,.18); padding: 0 1rem 1rem; transition: max-height .25s ease; }
+  .atlas[data-sheet="open"] .atlas-panel { max-height: calc(100% - 4.25rem - .75rem); }
+  .atlas[data-sheet="peek"] .atlas-list, .atlas[data-sheet="peek"] .atlas-lede { display: none; }
+  .atlas[data-sheet="peek"] .atlas-panel { overflow: hidden; }
+  .sheet-handle { display: grid; place-items: center; position: sticky; top: 0; z-index: 1; width: calc(100% + 2rem); margin: 0 -1rem .3rem; padding: .55rem 0 .45rem; border: 0; background: var(--paper); font: inherit; font-size: .75rem; font-weight: 700; color: var(--ink-2); cursor: pointer; touch-action: none; }
+  .sheet-handle::before { content: ""; width: 2.6rem; height: 4px; margin-bottom: .3rem; background: var(--line); }
+  .atlas-head h1 { font-size: 1.5rem; margin-bottom: .6rem; }
+  .atlas .locate { flex-wrap: nowrap; }
+  .atlas .locate-pick { font-size: 0; gap: 0; flex: 1; }
+  .atlas .locate-pick .field { width: 100%; font-size: var(--step--1); }
+  .atlas.has-sel[data-sheet="peek"] .atlas-head { display: none; }
+  .atlas.has-sel[data-sheet="peek"] .sel-card { margin-top: 0; padding-top: 0; border-top: 0; }
+  .atlas .cat-row { margin-inline: -1rem; padding-inline: 1rem; }
+  .sel-card:not([hidden]) { display: block; margin-top: .5rem; padding-top: .7rem; border-top: 1px solid var(--line); }
+  .sel-card h3 { margin: 0 0 .2rem; font-size: var(--step-1); font-stretch: 112%; }
+  .sel-card .small { margin: 0 0 .6rem; }
+  .atlas .map-note { right: auto; left: .6rem; bottom: auto; top: 2.2rem; max-width: 55%; }
+  .atlas .leaflet-control-zoom { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .atlas-panel { transition: none; } }

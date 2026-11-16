@@ -8,8 +8,8 @@ The site is plain HTML, CSS and JavaScript with no build step, so it runs from a
 
 | File | Page |
 |---|---|
-| `index.html` | Home: split-word hero, quick trip planner, search, curated trips, ferry days, six things to sort, island map, market preview, property |
-| `explore.html` | Explore, the on-island companion: nearest places from the phone's location or a chosen base, numbered map, directions, a day plan with a Google Maps route, live swell and wind from Open-Meteo, and things to do |
+| `index.html` | Explore, the front page: a full-screen map of the islands with the places nearest the phone's location or a chosen base, numbered pins, directions, a day plan with a Google Maps route and live swell and wind from Open-Meteo. Below the map: things to do, the quick trip planner, search, curated trips, ferry days, six things to sort, a market preview and property |
+| `explore.html` | Sends old Explore links to the front page, keeping the `?c=` category |
 | `plan.html` | Trip planner: dates, group, focus, surf level and stay give a day-by-day plan on the real ferry days with a cost estimate, plus six curated trips |
 | `guide.html` | Before you go: visa, surf tax, ferry and flights, money, health, phone, seasons, wave guide, respect, packing checklist |
 | `market.html` | Buyer page: categories, island, price and condition filters, saved items, listing detail, WhatsApp message and offer |
@@ -17,7 +17,7 @@ The site is plain HTML, CSS and JavaScript with no build step, so it runs from a
 | `property-pantai-bosua.html` | Pantai Bosua listing: 2,843 m² freehold beachfront on Sipora, €299,000 |
 | `assets/data.js` | Every price, ferry day, wave, trip, sample listing and Ask Satu answer. Change a figure here and every page updates |
 | `assets/places.js` | The 26 places, 8 bases and 8 activities that Explore shows. Positions are approximate and only used for distances and the map; directions search Google Maps by name |
-| `assets/explore.js` | Explore page script |
+| `assets/explore.js` | Map, place list and day plan on the front page |
 | `assets/site.js` | Header, phone tab bar, Ask Satu, request form, map, market cards and offline setup |
 | `assets/site.css` | Colours, type sizes, spacing and every style on the site |
 | `manifest.webmanifest`, `sw.js` | Phone app install and offline cache |
@@ -32,7 +32,7 @@ The site is plain HTML, CSS and JavaScript with no build step, so it runs from a
 6. Remove the 12 sample listings in `LISTINGS` in `assets/data.js` once real sellers post.
 7. Walk or ride to each place in `assets/places.js` with a phone and replace the approximate positions with the real ones.
 8. Check the ferry days in `FERRY` and the prices in `COSTS` with Mentawai Fast and the stays before launch, and again every season.
-9. The Explore map loads street tiles from the OpenStreetMap servers, which are free for light use only. Before launch, sign up with a tile provider such as MapTiler or Stadia Maps and put its tile address and key in the `L.tileLayer` line of `assets/explore.js`.
+9. The map on the front page loads street tiles from the OpenStreetMap servers, which are free for light use only. Before launch, sign up with a tile provider such as MapTiler or Stadia Maps and put its tile address and key in the `L.tileLayer` line of `assets/explore.js`.
 
 ## Ask Satu
 
