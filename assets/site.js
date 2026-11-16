@@ -60,10 +60,15 @@ $$("#mobile-nav a").forEach(a => a.addEventListener("click", () => mnav.close())
 /* Word matching for search and Ask Satu. Common words are skipped so "is there wifi" doesn't match "get there". */
 const STOP = new Set("the and for are you can how what when where who why does there their this that with from have has any about into need want get got is it in on of to do a an my me we our your i".split(" "));
 const words = q => String(q).toLowerCase().split(/[^a-z0-9]+/).filter(w => w.length > 2 && !STOP.has(w));
-function score(text, ws) {
-  const hay = new Set(words(text));
+// An exact word scores 2 and a shared stem 1. A word in the title adds 1, so "hospital" picks the hospital entry.
+function score(text, ws, title = "") {
+  const hay = new Set(words(text)), head = new Set(words(title));
   let s = 0;
-  for (const w of ws) for (const h of hay) if (h === w || (w.length > 3 && h.length > 3 && (h.startsWith(w) || w.startsWith(h)))) { s++; break; }
+  for (const w of ws) {
+    if (hay.has(w)) s += 2;
+    else for (const h of hay) if (w.length > 3 && h.length > 3 && (h.startsWith(w) || w.startsWith(h))) { s += 1; break; }
+    if (head.has(w)) s += 1;
+  }
   return s;
 }
 
@@ -77,7 +82,7 @@ function say(who, html) {
 }
 function answer(q) {
   const ws = words(q);
-  const best = KB.map(k => [score(k.title + " " + k.tags, ws), k]).sort((a, b) => b[0] - a[0])[0];
+  const best = KB.map(k => [score(k.title + " " + k.tags, ws, k.title), k]).sort((a, b) => b[0] - a[0])[0];
   if (!best || best[0] === 0) {
     return `<p>I don't have that one yet. The Satu team answers on WhatsApp.</p><p><a href="${waLink("Hi Satu Mentawai, " + q)}" target="_blank" rel="noopener">Ask the team on WhatsApp</a></p>`;
   }
