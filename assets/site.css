@@ -712,3 +712,15 @@ input:focus-visible, select:focus-visible, textarea:focus-visible { border-color
   .atlas[data-step="results"] .atlas-head h1 { display: none; }
   .choice { padding-block: .6rem; }
 }
+
+/* Back button on the Explore steps */
+.back-btn { display: inline-flex; align-items: center; gap: .3rem; font: inherit; font-weight: 700; font-size: var(--step--1); padding: .45rem .8rem .45rem .5rem; border: 2px solid var(--water); background: #fff; color: var(--water); cursor: pointer; }
+.back-btn .ic { width: 1.1rem; height: 1.1rem; stroke-width: 2.4; }
+.back-btn:hover { background: var(--water); color: #fff; }
+.back-btn:focus-visible { outline: 3px solid var(--buoy); outline-offset: 2px; }
+.ask .back-btn { margin: .3rem 0 .5rem; }
+.res-bar { display: flex; align-items: center; gap: .8rem; margin: .1rem 0 .7rem; }
+.res-bar .now { margin: 0; line-height: 1.35; }
+@media (min-width: 921px) {
+  .atlas[data-step="results"] .atlas-head { position: sticky; top: -1.4rem; z-index: 3; margin: -1.4rem -1.25rem 0; padding: 1.4rem 1.25rem .1rem; background: var(--paper); border-bottom: 1px solid var(--line); }
+}

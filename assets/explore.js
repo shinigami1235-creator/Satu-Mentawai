@@ -28,7 +28,10 @@ const lastBase = store.get("base", "");
 $("#where-list").innerHTML = [...BASES, AWAY].map(b =>
   `<li><button type="button" class="choice" data-where="${b.id}"${b.id === lastBase ? ' aria-current="true"' : ""}><span>${esc(b.name)}</span>${b.id === lastBase ? "<small>Last time</small>" : ""}</button></li>`).join("");
 
-function go(step) {
+// Each step is a history entry, so the Back button, the browser back button and the phone back gesture all go back one step
+function go(step, how = "push") {
+  if (how === "push" && step !== atlas.dataset.step) history.pushState({ step }, "");
+  if (how === "replace") history.replaceState({ step }, "");
   atlas.dataset.step = step;
   $("#ask-what").hidden = step !== "what";
   $("#ask-where").hidden = step !== "where";
@@ -55,7 +58,12 @@ $("#where-list").addEventListener("click", e => {
   zoom = base.id === "away" ? "all" : "near";
   go("results");
 });
-atlas.addEventListener("click", e => { const b = e.target.closest("[data-go]"); if (b) go(b.dataset.go); });
+atlas.addEventListener("click", e => {
+  if (!e.target.closest("[data-back]")) return;
+  if (history.state && history.state.step && history.state.step !== "what") history.back();
+  else go(atlas.dataset.step === "results" ? "where" : "what", "replace");
+});
+addEventListener("popstate", e => go((e.state && e.state.step) || "what", "none"));
 $("#use-loc").addEventListener("click", () => {
   const st = $("#loc-status");
   if (!("geolocation" in navigator)) { st.textContent = "This browser has no location. Pick where you are below."; return; }
@@ -337,5 +345,5 @@ $("#todo-list").innerHTML = ACTIVITIES.map(a => `<li>
 const linked = new URLSearchParams(location.search).has("c");
 const b0 = BASES.find(x => x.id === lastBase) || BASES[0];
 origin = { lat: b0.lat, lon: b0.lon, label: b0.name, gps: false };
-if (linked) go("results");
-else { zoom = "all"; origin = null; render(); }
+if (linked) go("results", "replace");
+else { zoom = "all"; origin = null; history.replaceState({ step: "what" }, ""); render(); }
