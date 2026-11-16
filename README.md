@@ -1,35 +1,47 @@
 # Satu Mentawai
 
-Sample website for Satu Mentawai, a one-stop shop for the Mentawai Islands in West Sumatra, Indonesia: getting there, stays, surf, property, buying and selling, and setting up a life or a business on the islands.
+Sample website and phone app for Satu Mentawai, a one-stop shop for the Mentawai Islands in West Sumatra, Indonesia. A first-time visitor plans the trip and reads what to sort before flying, people on the islands buy and sell in the market, and buyers view land for sale.
 
-The site is plain HTML, CSS and JavaScript with no build step, so it runs from any static host, including GitHub Pages.
+The site is plain HTML, CSS and JavaScript with no build step, so it runs from any static host, including GitHub Pages. On a phone it installs as an app and keeps the guide, the saved plan and the packing list offline.
 
 ## Pages
 
 | File | Page |
 |---|---|
-| `index.html` | Home: split-word hero, search, the trip from Padang, island map, property, Visit and Live here, List with us |
+| `index.html` | Home: split-word hero, quick trip planner, search, curated trips, ferry days, six things to sort, island map, market preview, property |
+| `plan.html` | Trip planner: dates, group, focus, surf level and stay give a day-by-day plan on the real ferry days with a cost estimate, plus six curated trips |
+| `guide.html` | Before you go: visa, surf tax, ferry and flights, money, health, phone, seasons, wave guide, respect, packing checklist |
+| `market.html` | Buyer page: categories, island, price and condition filters, saved items, listing detail, WhatsApp message and offer |
+| `sell.html` | Seller page: photos resized in the browser, details, handover, contact, live preview, edit, mark sold and delete |
 | `property-pantai-bosua.html` | Pantai Bosua listing: 2,843 m² freehold beachfront on Sipora, €299,000 |
+| `assets/data.js` | Every price, ferry day, wave, trip, sample listing and Ask Satu answer. Change a figure here and every page updates |
+| `assets/site.js` | Header, phone tab bar, Ask Satu, request form, map, market cards and offline setup |
 | `assets/site.css` | Colours, type sizes, spacing and every style on the site |
-| `assets/site.js` | Hero scroll, search, map layers, Ask Satu and the request form |
-| `assets/archivo.woff2` | Archivo variable font, served from the site |
-| `img/` | Drone photos in two sizes, 1000 px and 2000 px wide |
+| `manifest.webmanifest`, `sw.js` | Phone app install and offline cache |
 
 ## Before launch
 
-1. Put the business WhatsApp number in `CONFIG.whatsapp` at the top of `assets/site.js`, digits only with the country code. Until then the request form opens WhatsApp without a contact picked.
-2. Add the registered company name and address to the footer in both pages.
-3. Write the privacy policy, terms of service and booking and refund policy, and have a lawyer sign them off.
+1. Put the business WhatsApp number in `CONFIG.whatsapp` at the top of `assets/site.js`, digits only with the country code. Until then requests open WhatsApp without a contact picked.
+2. Add the registered company name and address to the footer of each page.
+3. Write the privacy policy, terms of service, booking and refund policy and market rules, and have a lawyer sign them off.
 4. Confirm who took the drone photos and that the site may use them.
-5. Replace the ferry table with the operator's current days and times.
+5. The market keeps listings in the seller's own browser. The live market needs a server and a database so every visitor sees every listing, with moderation for the market rules.
+6. Remove the 12 sample listings in `LISTINGS` in `assets/data.js` once real sellers post.
+7. Check the ferry days in `FERRY` and the prices in `COSTS` with Mentawai Fast and the stays before launch, and again every season.
 
 ## Ask Satu
 
-Ask Satu answers from the `KB` list in `assets/site.js`. Each entry has a title, the words people search with, the page it links to and the answer. Anything it can't answer goes to the team on WhatsApp. A live AI agent replaces this list later and keeps the same chat window.
+Ask Satu answers from the `KB` list in `assets/data.js`. Each entry has a title, the words people search with, the page it links to and the answer. Anything it can't answer goes to the team on WhatsApp. A live AI agent replaces this list later and keeps the same chat window.
 
 ## Sources for the facts on the site
 
 - Pantai Bosua, Rokot Airport and the price comparison: the seller's investment deck (Pantai_Bosua_V4_INVESTMENT.pdf).
-- Ferry, flights and surfboards: mentawaifast.com schedules as quoted by Kali Villas, Backindo and Journey Beyond Horizon.
-- Surf season, charters and regions: Perfect Wave Travel, Surf Indonesia and Driftwood Mentawai.
+- Visa: Directorate General of Immigration figures as reported by Voice of Indonesia (RRI), VisasNews and Issa Compass, 2026.
+- Surf tax, hotel tax and village donation: Macaronis Resort and The Jakarta Post.
+- Ferry days, fares and board freight: Mentawai Fast schedules as quoted by Kali Villas, Journey Beyond Horizon, Macaronis Resort, Backindo and Bucketlistly, 2024 to 2026.
+- Susi Air Padang to Rokot: FlightConnections and Traveloka, 2026.
+- ATMs, malaria and signal: Backindo, Macaronis Resort and Mentawai surf camp guides.
+- Stay prices: Indonesian Surf Guide. Charter prices: Perfect Wave Travel and Surf Indonesia.
+- Waves: Surf Camp Sumatra, Indosurf, Surfertoday, Stoked for Travel and Indonesian Surf Guide.
 - Island outlines: Natural Earth 1:10m land, public domain.
+- Padang hotel and transfer ranges in `COSTS` are planning estimates, not quotes.
