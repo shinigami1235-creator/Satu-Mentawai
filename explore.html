@@ -15,7 +15,7 @@
 <link rel="apple-touch-icon" href="img/icon-192.png">
 <link rel="preload" href="assets/archivo.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/site.css">
-
+<link rel="stylesheet" href="assets/leaflet/leaflet.css">
 </head>
 <body data-page="explore">
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -113,7 +113,8 @@
       </div>
       <div class="ex-map">
         <div class="map-box">
-          <svg class="map-svg land-map" id="ex-map" viewBox="0 0 810 954" role="img" aria-labelledby="ex-map-title"><title id="ex-map-title">Map of places near you in the Mentawai Islands</title><rect width="810" height="954" class="sea"/><g class="land"><path d="M301 289L304 301L303 313L297 320L289 290L280 275L270 280L274 284L286 312L290 332L286 334L273 331L264 333L241 343L234 342L193 320L184 311L157 299L141 278L134 273L137 259L130 244L72 161L65 157L65 149L52 125L53 118L63 102L72 80L73 48L75 41L85 35L99 33L122 38L140 26L156 23L161 24L159 31L168 32L176 40L178 48L176 55L171 51L164 51L173 65L176 77L191 88L199 106L210 120L211 128L222 141L223 145L217 152L226 156L240 186L257 203L258 218L243 208L245 215L262 236L271 240L274 260L277 263L288 263L292 265L298 277L297 283L301 289Z"/><path d="M799 284L790 268L786 237L763 213L768 204L763 201L768 196L763 173L760 169L731 156L723 149L720 152L711 153L704 149L713 138L714 128L712 123L697 110L691 112L690 108L692 98L697 91L692 80L699 78L707 80L708 71L707 68L699 69L695 65L685 46L682 21L674 0L810 0L810 298L799 284Z"/><path d="M706 851L726 877L730 887L724 894L709 880L694 872L693 861L687 860L679 854L677 845L679 845L683 850L688 849L680 832L682 820L663 802L647 799L650 793L635 776L626 762L626 753L630 745L622 703L626 699L640 692L648 696L657 709L665 714L686 736L697 743L708 762L726 780L728 815L725 822L719 820L712 823L704 820L695 829L703 831L701 840L706 851Z"/><path d="M631 658L637 680L635 685L615 692L608 709L599 712L590 711L576 704L572 714L569 716L564 714L561 709L558 690L553 690L558 661L557 644L553 639L546 635L549 628L544 613L549 592L552 588L559 591L566 601L597 630L618 640L622 650L631 658Z"/><path d="M494 519L507 542L507 549L507 546L503 551L498 541L482 538L472 530L455 527L440 512L415 510L415 505L420 498L415 495L412 496L410 490L408 490L405 495L398 480L388 466L389 462L401 461L396 450L395 436L401 425L412 419L425 421L437 434L448 438L453 460L458 471L477 500L477 507L494 519Z"/><path d="M303 350L301 354L293 354L284 358L292 347L290 337L301 343L303 350Z"/><path d="M741 825L751 838L748 840L740 838L736 832L735 824L741 818L741 825Z"/><path d="M801 945L796 948L790 947L786 946L785 942L794 942L801 945Z"/></g><g class="island-labels"><text x="180" y="191">Siberut</text><text x="385" y="511">Sipora</text><text x="601" y="616">North Pagai</text><text x="659" y="803">South Pagai</text><text x="745" y="144">Sumatra</text></g></svg>
+          <div class="ex-leaflet" id="ex-map" role="region" aria-label="Map of places near you"></div>
+          <p class="map-note" id="map-note" hidden>The street map needs internet, so this shows the coastline.</p>
           <div class="zoom">
             <button type="button" class="cat" id="zoom-near" aria-pressed="true">Around me</button>
             <button type="button" class="cat" id="zoom-all" aria-pressed="false">All islands</button>
@@ -266,6 +267,8 @@
 </dialog>
 <script src="assets/data.js" defer></script>
 <script src="assets/site.js" defer></script>
+<script src="assets/leaflet/leaflet.js" defer></script>
+<script src="assets/land.js" defer></script>
 <script src="assets/places.js" defer></script>
 <script src="assets/explore.js" defer></script>
 </body>

@@ -610,30 +610,20 @@ input:focus-visible, select:focus-visible, textarea:focus-visible { border-color
 .fc-days { list-style: none; padding: 0; margin: 0; }
 .fc-days li { display: grid; grid-template-columns: 6.5rem 1fr; gap: .6rem; padding: .3rem 0; border-top: 1px solid rgba(255,255,255,.15); font-variant-numeric: tabular-nums; }
 .fc-days span { color: var(--buoy); font-weight: 700; }
-.land-map { transition: none; }
-.land-map .land, .land-map .island-labels, .land-map .sea { pointer-events: none; }
-.xpin { cursor: pointer; }
-.xpin circle { stroke: #fff; stroke-width: 3; fill: var(--water); r: 14; }
-.xpin-surf circle { fill: var(--lagoon); }
-.xpin-essential circle { fill: #b42318; }
-.xpin-food circle { fill: var(--palm); }
-.xpin text { font-family: Archivo, sans-serif; font-weight: 800; pointer-events: none; }
-.xpin .num-t { fill: #fff; font-size: 5px; text-anchor: middle; dominant-baseline: central; }
-.xpin .name-t { fill: var(--ink); font-size: 6px; paint-order: stroke; stroke: #fff; stroke-width: 2px; stroke-linejoin: round; display: none; }
-.xpin.sel .num-t { fill: var(--ink); }
-.land-map:not(.zoomed) .xpin text { display: none; }
-.land-map.zoomed .xpin circle { r: 4.2; stroke-width: 1; }
-.land-map.zoomed .island-labels text { font-size: 7px; }
-.land-map.zoomed .land path { stroke-width: .6; }
-.xpin.sel circle { fill: var(--buoy); stroke: var(--ink); }
-.xpin:focus { outline: none; }
-.xpin:focus-visible circle { stroke: var(--ink); stroke-width: 3; }
-.you circle { fill: var(--buoy); stroke: var(--ink); stroke-width: 2; }
-.you .halo { fill: rgba(245,196,0,.3); stroke: none; }
-.you text { font-family: Archivo, sans-serif; font-size: 14px; font-weight: 800; fill: var(--ink); paint-order: stroke; stroke: #fff; stroke-width: 4px; }
-.land-map.zoomed .you circle:not(.halo) { r: 2.6; stroke-width: .8; }
-.land-map.zoomed .you .halo { r: 6; }
-.land-map.zoomed .you text { font-size: 5.5px; stroke-width: 1.6px; }
+.ex-leaflet.leaflet-container { height: min(72vh, 640px); min-height: 380px; background: #cfe4e4; font-family: inherit; }
+.ex-leaflet:focus-visible { outline: 3px solid var(--buoy); outline-offset: -3px; }
+.map-note { position: absolute; left: .6rem; bottom: 1.6rem; z-index: 500; margin: 0; max-width: min(60%, 22rem); padding: .35rem .6rem; background: var(--paper); color: var(--ink); font-size: var(--step--1); }
+.zoom { z-index: 500; }
+.lpin span { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--c); color: #fff; border: 3px solid #fff; box-shadow: 0 1px 3px rgba(14,31,37,.45); font: 800 13px/1 Archivo, sans-serif; font-variant-numeric: tabular-nums; }
+.lpin.sel span { background: var(--buoy); color: var(--ink); border-color: var(--ink); transform: scale(1.2); }
+.lpin:focus { outline: none; }
+.lpin:focus-visible span { outline: 3px solid var(--ink); outline-offset: 2px; }
+.lyou span { display: block; width: 22px; height: 22px; border-radius: 50%; background: var(--buoy); border: 3px solid var(--ink); box-shadow: 0 0 0 8px rgba(245,196,0,.3); }
+.lyou b { position: absolute; left: 28px; top: 1px; font: 800 13px/1.2 Archivo, sans-serif; color: var(--ink); white-space: nowrap; text-shadow: 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff; }
+.leaflet-tooltip { font: 700 13px/1.2 Archivo, sans-serif; border-radius: 0; border-color: var(--line); color: var(--ink); }
+.leaflet-container a.leaflet-control-zoom-in, .leaflet-container a.leaflet-control-zoom-out { border-radius: 0; color: var(--ink); }
+.leaflet-touch .leaflet-bar { border-radius: 0; }
+.leaflet-control-attribution { font-size: 11px; }
 .day-bar { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(var(--tabbar) + .8rem); z-index: 25; display: flex; gap: 1rem; align-items: center;
   font: inherit; font-weight: 700; border: 0; cursor: pointer; padding: .75rem 1.1rem; background: var(--ink); color: #fff; box-shadow: 0 0 0 3px var(--buoy); white-space: nowrap; }
 .day-open { color: var(--buoy); }

@@ -65,46 +65,71 @@ $$(".view-switch [data-view]").forEach(b => b.addEventListener("click", () => {
   $$(".view-switch [data-view]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
 }));
 
-/* Map */
-const svg = $("#ex-map");
-const pinLayer = document.createElementNS("http://www.w3.org/2000/svg", "g");
-svg.append(pinLayer);
+/* Map: OpenStreetMap streets over a drawn coastline, so it still works with no signal */
+const PIN_COLOR = { surf: "#0f7c7a", essential: "#b42318", food: "#2d5a3a" };
+const map = L.map("ex-map", { zoomSnap: 0.5, scrollWheelZoom: false, attributionControl: true }).setView([-2.0, 99.6], 8);
+map.attributionControl.setPrefix(false);
+L.polygon(LAND.map(r => [r]), { stroke: true, color: "#7f9a8c", weight: 1, fillColor: "#e9e3d2", fillOpacity: 1, interactive: false }).addTo(map);
+const tiles = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  maxZoom: 18, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'
+}).addTo(map);
+let tilesOk = false, offline = false;
+tiles.on("tileload", () => { tilesOk = true; $("#map-note").hidden = true; });
+setTimeout(() => {
+  if (tilesOk) return;
+  map.removeLayer(tiles);
+  map.attributionControl.addAttribution("Coastline &copy; OpenStreetMap contributors");
+  $("#map-note").hidden = false;
+  offline = true;
+  setZoom(zoom);
+}, 6000);
+map.on("focus click", () => map.scrollWheelZoom.enable());
+map.on("blur mouseout", () => map.scrollWheelZoom.disable());
+
+const pinLayer = L.layerGroup().addTo(map);
+const markers = {};
+let youMarker = null, shown = [];
+const pinIcon = (p, n, sel) => L.divIcon({
+  className: "lpin" + (sel ? " sel" : ""),
+  html: `<span style="--c:${PIN_COLOR[p.cat] || "#0b3a4a"}">${n}</span>`,
+  iconSize: [30, 30], iconAnchor: [15, 15]
+});
+function drawPins(rows) {
+  pinLayer.clearLayers();
+  Object.keys(markers).forEach(k => delete markers[k]);
+  shown = rows;
+  rows.forEach((p, i) => {
+    const m = L.marker([p.lat, p.lon], { icon: pinIcon(p, i + 1, p.id === selected), title: p.name, alt: p.name, keyboard: true, riseOnHover: true, zIndexOffset: p.id === selected ? 1000 : 0 })
+      .bindTooltip(esc(p.name), { direction: "top", offset: [0, -14] })
+      .on("click", () => select(p.id, true));
+    m.addTo(pinLayer);
+    markers[p.id] = m;
+  });
+  if (youMarker) map.removeLayer(youMarker);
+  youMarker = origin ? L.marker([origin.lat, origin.lon], {
+    icon: L.divIcon({ className: "lyou", html: `<span></span><b>${origin.gps ? "You" : "Base"}</b>`, iconSize: [22, 22], iconAnchor: [11, 11] }),
+    keyboard: false, interactive: false, zIndexOffset: 500
+  }).addTo(map) : null;
+}
 function setZoom(mode) {
   zoom = mode;
   $("#zoom-near").setAttribute("aria-pressed", String(mode === "near"));
   $("#zoom-all").setAttribute("aria-pressed", String(mode === "all"));
-  if (mode === "all" || !origin) { svg.setAttribute("viewBox", `0 0 ${MAP.w} ${MAP.h}`); svg.classList.remove("zoomed"); return; }
-  const [x, y] = P(origin.lon, origin.lat), s = 130;
-  const vx = Math.max(0, Math.min(MAP.w - s, x - s / 2)), vy = Math.max(0, Math.min(MAP.h - s, y - s / 2));
-  svg.setAttribute("viewBox", `${vx.toFixed(0)} ${vy.toFixed(0)} ${s} ${s}`);
-  svg.classList.add("zoomed");
+  const pts = (mode === "near" && origin ? shown.slice(0, 5) : shown).map(p => [p.lat, p.lon]);
+  if (origin) pts.push([origin.lat, origin.lon]);
+  if (!pts.length) return;
+  map.invalidateSize();
+  map.fitBounds(L.latLngBounds(pts), { padding: [36, 36], maxZoom: mode === "near" ? (offline ? 11 : 15) : 11, animate: false });
 }
 $("#zoom-near").addEventListener("click", () => setZoom("near"));
 $("#zoom-all").addEventListener("click", () => setZoom("all"));
-
-function drawPins(rows) {
-  const ns = "http://www.w3.org/2000/svg";
-  pinLayer.innerHTML = "";
-  rows.forEach((p, i) => {
-    const [x, y] = P(p.lon, p.lat);
-    const g = document.createElementNS(ns, "g");
-    g.setAttribute("class", `xpin xpin-${p.cat}${p.id === selected ? " sel" : ""}`);
-    g.setAttribute("transform", `translate(${x.toFixed(1)} ${y.toFixed(1)})`);
-    g.setAttribute("tabindex", "0"); g.setAttribute("role", "button"); g.setAttribute("aria-label", p.name);
-    g.dataset.id = p.id;
-    g.innerHTML = `<circle r="7"/><text class="num-t">${i + 1}</text><text class="name-t" x="6" y="-5">${esc(p.name)}</text>`;
-    pinLayer.append(g);
-  });
-  if (origin) {
-    const [x, y] = P(origin.lon, origin.lat);
-    const g = document.createElementNS(ns, "g");
-    g.setAttribute("class", "you"); g.setAttribute("transform", `translate(${x.toFixed(1)} ${y.toFixed(1)})`);
-    g.innerHTML = `<circle r="11" class="halo"/><circle r="5.5"/><text x="12" y="-8">${origin.gps ? "You" : "Base"}</text>`;
-    pinLayer.append(g);
-  }
-}
-pinLayer.addEventListener("click", e => { const g = e.target.closest("[data-id]"); if (g) select(g.dataset.id, true); });
-pinLayer.addEventListener("keydown", e => { const g = e.target.closest("[data-id]"); if (g && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); select(g.dataset.id, true); } });
+let mapW = 0;
+new ResizeObserver(([e]) => {
+  const w = e.contentRect.width;
+  map.invalidateSize();
+  if (!mapW && w) setZoom(zoom);
+  mapW = w;
+}).observe($("#ex-map"));
 
 /* List */
 function placeCard(p, i) {
@@ -146,9 +171,8 @@ function select(id, fromMap) {
   selected = id;
   const p = PLACES.find(x => x.id === id);
   const d = origin ? km(origin, p) : null;
-  $$(".xpin.sel").forEach(x => x.classList.remove("sel"));
-  const pin = $(`.xpin[data-id="${id}"]`);
-  if (pin) { pin.classList.add("sel"); pinLayer.append(pin); }
+  shown.forEach((q, i) => markers[q.id]?.setIcon(pinIcon(q, i + 1, q.id === id)).setZIndexOffset(q.id === id ? 1000 : 0));
+  if (!fromMap && markers[id]) map.panTo(markers[id].getLatLng(), { animate: !reduceMotion.matches });
   $$(".place.sel").forEach(x => x.classList.remove("sel"));
   $(`#pl-${id}`)?.classList.add("sel");
   $("#ex-info").innerHTML = `<h3>${esc(p.name)}</h3><p class="small">${CATS[p.cat]}, ${esc(p.island)}${d !== null ? `. ${dist(d)} from ${esc(origin.label)}` : ""}</p><p>${esc(p.access)}</p>

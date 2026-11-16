@@ -32,6 +32,7 @@ The site is plain HTML, CSS and JavaScript with no build step, so it runs from a
 6. Remove the 12 sample listings in `LISTINGS` in `assets/data.js` once real sellers post.
 7. Walk or ride to each place in `assets/places.js` with a phone and replace the approximate positions with the real ones.
 8. Check the ferry days in `FERRY` and the prices in `COSTS` with Mentawai Fast and the stays before launch, and again every season.
+9. The Explore map loads street tiles from the OpenStreetMap servers, which are free for light use only. Before launch, sign up with a tile provider such as MapTiler or Stadia Maps and put its tile address and key in the `L.tileLayer` line of `assets/explore.js`.
 
 ## Ask Satu
 
@@ -49,5 +50,5 @@ Ask Satu answers from the `KB` list in `assets/data.js`. Each entry has a title,
 - Waves: Surf Camp Sumatra, Indosurf, Surfertoday, Stoked for Travel and Indonesian Surf Guide.
 - Places and activities: Journey Beyond Horizon (Sipora for non-surfers), Antara, Popbela, the Pantai Jati entry in the Indonesian encyclopedia, Direktori Pariwisata (Pajujurung), Authentic Indonesia and RRI (Kulukubuk), Backindo (Muntei), Indonesia Juara (Siberut National Park), Travelingyuk (Singunung) and indonesia.travel (diving prices).
 - Swell and wind: Open-Meteo marine and weather forecast APIs, free with no key. The forecast needs internet, and the last one is kept on the phone.
-- Island outlines: Natural Earth 1:10m land, public domain.
+- Island outlines: Natural Earth 1:10m land, public domain, on the home page. The Explore map uses OpenStreetMap tiles and an OpenStreetMap coastline (geo-maps earth-lands-100m), ODbL, through Leaflet 1.9.4 (BSD-2, in `assets/leaflet`).
 - Padang hotel and transfer ranges in `COSTS` are planning estimates, not quotes.
