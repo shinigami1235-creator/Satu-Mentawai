@@ -84,7 +84,7 @@
   <a href="property-pantai-bosua.html"><svg class="ic"><use href="#i-house"/></svg>Property</a>
 </nav>
 <main id="main">
-<section class="atlas" id="explore" aria-labelledby="atlas-title" data-sheet="peek">
+<section class="atlas" id="explore" aria-labelledby="atlas-title" data-sheet="peek" data-step="what">
   <div class="atlas-map">
     <div class="ex-leaflet" id="ex-map" role="region" aria-label="Map of places in the Mentawai Islands"></div>
     <p class="map-note" id="map-note" hidden>The street map needs internet, so this shows the coastline.</p>
@@ -97,18 +97,27 @@
     <button class="sheet-handle" type="button" id="sheet-toggle" aria-expanded="false" aria-controls="atlas-list"><span>Show the list</span></button>
     <div class="atlas-head">
       <h1 id="atlas-title">Explore Mentawai</h1>
-      <p class="atlas-lede">Waves, beaches, waterfalls, villages, food and the nearest ATM or clinic, nearest first, with directions and live swell. Free, no sign-up.</p>
-      <div class="locate" id="locate">
-        <button class="btn btn-sm" type="button" id="use-loc"><svg class="ic" aria-hidden="true"><use href="#i-locate"/></svg>Use my location</button>
-        <label class="locate-pick">or I'm at
-          <select class="field" id="base"></select>
-        </label>
+      <div class="ask" id="ask-what">
+        <h2>What do you want to do?</h2>
+        <p class="ask-hint">Pick one and the map takes you to those places. Free, no sign-up.</p>
+        <ul class="choices" id="what-list"></ul>
+        <p class="ask-more">Or <a href="plan.html">plan a trip</a>, <a href="market.html">buy and sell</a>, or <a href="property-pantai-bosua.html">view land for sale</a>.</p>
       </div>
-      <p class="locate-status" id="loc-status" aria-live="polite"></p>
-      <div class="cat-row" id="ex-cats" role="group" aria-label="Show"></div>
+      <div class="ask" id="ask-where" hidden>
+        <button class="link-btn small" type="button" data-go="what">Back</button>
+        <h2>Where are you?</h2>
+        <p class="ask-hint">Places are sorted by distance from here.</p>
+        <button class="btn btn-sm" type="button" id="use-loc"><svg class="ic" aria-hidden="true"><use href="#i-locate"/></svg>Use my location</button>
+        <p class="locate-status" id="loc-status" aria-live="polite"></p>
+        <ul class="choices" id="where-list"></ul>
+      </div>
+      <div class="results-head" id="results-head" hidden>
+        <p class="now"><span id="now-text"></span> <button class="link-btn small" type="button" data-go="what">Change</button></p>
+        <div class="cat-row" id="ex-cats" role="group" aria-label="Show"></div>
+      </div>
     </div>
     <div class="sel-card" id="ex-info" aria-live="polite" hidden></div>
-    <div class="atlas-list" id="atlas-list">
+    <div class="atlas-list" id="atlas-list" hidden>
       <p class="count" id="ex-count"></p>
       <ol class="places" id="places"></ol>
     </div>

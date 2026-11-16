@@ -16,40 +16,68 @@ let cat = new URLSearchParams(location.search).get("c") || "all", origin = null,
 if (!CATS[cat]) cat = "all";
 let day = store.get("day", []);
 
-/* Where you are */
-const baseSel = $("#base");
-BASES.forEach(b => baseSel.add(new Option(b.name, b.id)));
-const savedBase = store.get("base", "tuapejat");
-baseSel.value = BASES.some(b => b.id === savedBase) ? savedBase : "tuapejat";
-function setBase(id) {
-  const b = BASES.find(x => x.id === id);
-  origin = { lat: b.lat, lon: b.lon, label: b.name, gps: false };
-  store.set("base", id);
-  $("#loc-status").textContent = "";
-  render();
+/* First ask what they want and where they are, then show those places */
+const atlas = $("#explore"), phone = matchMedia("(max-width: 920px)");
+const WHAT = [["surf", "Surf"], ["beach", "Beaches and snorkelling"], ["island", "Island hopping"], ["nature", "Waterfalls and forest"],
+  ["culture", "Villages and culture"], ["food", "Food"], ["essential", "ATM, clinic or port"], ["all", "Show me everything"]];
+const AWAY = { id: "away", name: "Not on the islands yet", lat: -2.034, lon: 99.594 };
+const nOf = c => PLACES.filter(p => c === "all" || p.cat === c).length;
+$("#what-list").innerHTML = WHAT.map(([c, label]) =>
+  `<li><button type="button" class="choice" data-what="${c}"><svg class="ic" aria-hidden="true"><use href="#${CAT_ICONS[c]}"/></svg><span>${label}</span><small class="num">${nOf(c)}</small></button></li>`).join("");
+const lastBase = store.get("base", "");
+$("#where-list").innerHTML = [...BASES, AWAY].map(b =>
+  `<li><button type="button" class="choice" data-where="${b.id}"${b.id === lastBase ? ' aria-current="true"' : ""}><span>${esc(b.name)}</span>${b.id === lastBase ? "<small>Last time</small>" : ""}</button></li>`).join("");
+
+function go(step) {
+  atlas.dataset.step = step;
+  $("#ask-what").hidden = step !== "what";
+  $("#ask-where").hidden = step !== "where";
+  $("#results-head").hidden = $("#atlas-list").hidden = step !== "results";
+  $("#atlas-panel").scrollTop = 0;
+  if (step === "results") { render(); if (phone.matches) setSheet("peek"); }
+  else { unselect(); setSheet("peek"); }
 }
-baseSel.addEventListener("change", () => setBase(baseSel.value));
+function nowText() {
+  const what = (WHAT.find(w => w[0] === cat) || WHAT[7])[1];
+  $("#now-text").innerHTML = cat === "all" ? `Everything near <b>${esc(origin.label)}</b>` : `<b>${esc(what)}</b> near <b>${esc(origin.label)}</b>`;
+}
+$("#what-list").addEventListener("click", e => {
+  const b = e.target.closest("[data-what]"); if (!b) return;
+  cat = b.dataset.what;
+  $$("#ex-cats .cat").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.c === cat)));
+  go("where");
+});
+$("#where-list").addEventListener("click", e => {
+  const b = e.target.closest("[data-where]"); if (!b) return;
+  const base = [...BASES, AWAY].find(x => x.id === b.dataset.where);
+  origin = { lat: base.lat, lon: base.lon, label: base.id === "away" ? "Tuapejat port" : base.name, gps: false };
+  if (base.id !== "away") store.set("base", base.id);
+  zoom = base.id === "away" ? "all" : "near";
+  go("results");
+});
+atlas.addEventListener("click", e => { const b = e.target.closest("[data-go]"); if (b) go(b.dataset.go); });
 $("#use-loc").addEventListener("click", () => {
   const st = $("#loc-status");
-  if (!("geolocation" in navigator)) { st.textContent = "This browser has no location. Pick where you are instead."; return; }
+  if (!("geolocation" in navigator)) { st.textContent = "This browser has no location. Pick where you are below."; return; }
   st.textContent = "Finding you";
   navigator.geolocation.getCurrentPosition(pos => {
     const here = { lat: pos.coords.latitude, lon: pos.coords.longitude };
     const inIslands = here.lat > -3.6 && here.lat < -0.8 && here.lon > 98.4 && here.lon < 100.8;
     if (!inIslands) {
       const away = km(here, { lat: -2.034, lon: 99.594 });
-      st.textContent = `You're ${Math.round(away).toLocaleString("en-US")} km from Tuapejat, so the list uses the place you pick until you're on the islands.`;
+      st.textContent = `You're ${Math.round(away).toLocaleString("en-US")} km from Tuapejat. Pick where you'll stay below.`;
       return;
     }
-    origin = { ...here, label: "your location", gps: true };
-    st.textContent = "Using your location.";
-    render();
+    origin = { ...here, label: "you", gps: true };
+    st.textContent = "";
+    zoom = "near";
+    go("results");
   }, err => {
-    st.textContent = err.code === 1 ? "Location is blocked for this page. Allow it in the browser, or pick where you are." : "Your location could not be found. Pick where you are instead.";
+    st.textContent = err.code === 1 ? "Location is blocked for this page. Allow it in the browser, or pick where you are below." : "Your location could not be found. Pick where you are below.";
   }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 });
 });
 
-/* Category buttons */
+/* Category buttons on the results */
 $("#ex-cats").innerHTML = Object.entries(CATS).map(([k, v]) =>
   `<button class="cat" type="button" data-c="${k}" aria-pressed="${k === cat}"><svg class="ic" aria-hidden="true"><use href="#${CAT_ICONS[k]}"/></svg>${v}</button>`).join("");
 $("#ex-cats").addEventListener("click", e => {
@@ -60,7 +88,6 @@ $("#ex-cats").addEventListener("click", e => {
 });
 
 /* Bottom sheet on phones: peek shows the map, open shows the list */
-const atlas = $("#explore"), phone = matchMedia("(max-width: 920px)");
 function setSheet(state) {
   atlas.dataset.sheet = state;
   const open = state === "open";
@@ -85,7 +112,8 @@ const attr = L.control.attribution({ position: phone.matches ? "topleft" : "bott
 const cover = () => phone.matches
   ? { paddingTopLeft: [24, 70], paddingBottomRight: [24, $("#atlas-panel").offsetHeight + 24] }
   : { paddingTopLeft: [$("#atlas-panel").getBoundingClientRect().right - $("#ex-map").getBoundingClientRect().left + 32, 70], paddingBottomRight: [40, 40] };
-L.polygon(LAND.map(r => [r]), { stroke: true, color: "#7f9a8c", weight: 1, fillColor: "#e9e3d2", fillOpacity: 1, interactive: false }).addTo(map);
+map.createPane("land").style.zIndex = 150;
+L.polygon(LAND.map(r => [r]), { pane: "land", stroke: true, color: "#7f9a8c", weight: 1, fillColor: "#e9e3d2", fillOpacity: 1, interactive: false }).addTo(map);
 const tiles = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
   maxZoom: 18, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'
 }).addTo(map);
@@ -124,7 +152,7 @@ function drawPins(rows) {
   if (youMarker) map.removeLayer(youMarker);
   youMarker = origin ? L.marker([origin.lat, origin.lon], {
     icon: L.divIcon({ className: "lyou", html: `<span></span><b>${origin.gps ? "You" : "Base"}</b>`, iconSize: [22, 22], iconAnchor: [11, 11] }),
-    keyboard: false, interactive: false, zIndexOffset: 500
+    keyboard: false, interactive: false, zIndexOffset: -500
   }).addTo(map) : null;
 }
 function setZoom(mode) {
@@ -172,7 +200,8 @@ function rows() {
 function render() {
   const r = rows();
   $("#places").innerHTML = r.map((p, i) => placeCard(p, i)).join("");
-  $("#ex-count").textContent = `${r.length} place${r.length === 1 ? "" : "s"}, nearest to ${origin ? origin.label : "Tuapejat"} first. Distances are in a straight line.`;
+  $("#ex-count").textContent = `${r.length} place${r.length === 1 ? "" : "s"}, nearest first. Distances are in a straight line.`;
+  if (origin) nowText();
   drawPins(r);
   setZoom(zoom);
   drawDay();
@@ -301,4 +330,9 @@ $("#todo-list").innerHTML = ACTIVITIES.map(a => `<li>
   ${a.req ? `<a class="btn btn-sm" href="#" data-request="${esc(a.req)}">Book it</a>` : ""}
 </li>`).join("");
 
-setBase(baseSel.value);
+// A link with ?c= skips the questions and uses the last place they picked
+const linked = new URLSearchParams(location.search).has("c");
+const b0 = BASES.find(x => x.id === lastBase) || BASES[0];
+origin = { lat: b0.lat, lon: b0.lon, label: b0.name, gps: false };
+if (linked) go("results");
+else { zoom = "all"; origin = null; render(); }
