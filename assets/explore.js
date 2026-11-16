@@ -155,7 +155,7 @@ function drawPins(rows) {
     keyboard: false, interactive: false, zIndexOffset: -500
   }).addTo(map) : null;
 }
-function setZoom(mode) {
+function setZoom(mode, still) {
   zoom = mode;
   $("#zoom-near").setAttribute("aria-pressed", String(mode === "near"));
   $("#zoom-all").setAttribute("aria-pressed", String(mode === "all"));
@@ -163,7 +163,10 @@ function setZoom(mode) {
   if (origin) pts.push([origin.lat, origin.lon]);
   if (!pts.length) return;
   map.invalidateSize();
-  map.fitBounds(L.latLngBounds(pts), { ...cover(), maxZoom: mode === "near" ? (offline ? 11 : 15) : 11, animate: false });
+  const opts = { ...cover(), maxZoom: mode === "near" ? (offline ? 11 : 15) : 11 };
+  // glide to the new places; jump only on first draw or when the visitor asked for less motion
+  if (still || reduceMotion.matches || !mapW) map.fitBounds(L.latLngBounds(pts), { ...opts, animate: false });
+  else map.flyToBounds(L.latLngBounds(pts), { ...opts, duration: 0.8, easeLinearity: 0.35 });
 }
 $("#zoom-near").addEventListener("click", () => setZoom("near"));
 $("#zoom-all").addEventListener("click", () => setZoom("all"));
@@ -171,7 +174,7 @@ let mapW = 0;
 new ResizeObserver(([e]) => {
   const w = e.contentRect.width;
   map.invalidateSize();
-  if (!mapW && w) setZoom(zoom);
+  if (!mapW && w) { mapW = w; setZoom(zoom, true); }
   mapW = w;
 }).observe($("#ex-map"));
 

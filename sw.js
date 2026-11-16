@@ -1,5 +1,5 @@
 // Keeps the guide, planner and market working offline once visited. Pages load from the network first.
-const CACHE = "satu-v8";
+const CACHE = "satu-v9";
 const SHELL = ["index.html", "explore.html", "plan.html", "guide.html", "market.html", "sell.html", "property-pantai-bosua.html",
   "assets/site.css", "assets/data.js", "assets/site.js", "assets/home.js", "assets/places.js", "assets/explore.js", "assets/land.js", "assets/leaflet/leaflet.js", "assets/leaflet/leaflet.css", "assets/plan.js", "assets/guide.js", "assets/market.js", "assets/sell.js",
   "assets/archivo.woff2", "img/icon-192.png", "img/contours.svg", "img/contours-light.svg"];
